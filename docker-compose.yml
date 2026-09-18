@@ -1,0 +1,20 @@
+services:
+  engine:
+    build: ./engine
+    ports:
+      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:8081:8081"
+    environment:
+      CA_DIR: /data/ca
+      PROXY_LISTEN_ADDR: 0.0.0.0:8080
+      ENGINE_LISTEN_ADDR: 0.0.0.0:8081
+    volumes:
+      - ./data/ca:/data/ca
+  web:
+    build: ./web
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      ENGINE_URL: http://engine:8081
+    depends_on:
+      - engine
