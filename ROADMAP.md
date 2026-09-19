@@ -1,291 +1,252 @@
-# RequestRider Roadmap
+# Roadmap RequestRider
 
-План розвитку RequestRider після поточного QA-релізу. Виконані етапи
-знаходяться на початку документа, незавершені — нижче. Позначка `[x]`
-означає функцію, яка вже доступна в поточній версії; `[ ]` — майбутню роботу.
+Цей документ описує фактичний стан RequestRider і порядок подальшої
+розробки. Позначка `[x]` означає функцію, доступну в поточній версії; `[ ]` —
+майбутню роботу.
 
-## Виконано
+## Поточний реліз
 
-### Базова архітектура та запуск
+RequestRider уже має робочий локальний QA-процес:
+
+```text
+Browser :8000
+    -> Django web gateway + SQLite History
+    -> Go engine :8081
+         -> outbound HTTP execution
+         -> Intruder generation/execution
+         -> Target site-map crawler
+         -> passive MITM proxy :8080
+```
+
+Поточний AI — це ізольований conversational chat для аналізу явно прикріплених
+оператором evidence. Він не є автономним агентом і не запускає дії
+RequestRider.
+
+## Реалізовано
+
+### Архітектура, запуск і дані
 
 - [x] Django UI із вкладками Repeater, Intruder, Target, OSINT, Scanner,
-  Comparer, Decoder, History і Traffic.
-- [x] Go engine для виконання HTTP-запитів, Intruder, Target map та passive
-  MITM proxy.
-- [x] SQLite History для завершених Repeater та Intruder exchange.
-- [x] Автоматичне застосування Django migrations під час `run-engine.sh` та
-  Docker-запуску.
-- [x] Docker Compose для engine і web-контейнера з опублікованими портами
-  `8000`, `8080` і `8081`.
-- [x] Локальний CA: автоматичне створення `data/ca/ca.crt` і
+  Comparer, Decoder, History, Traffic і AI.
+- [x] Go engine для HTTP-виконання, Intruder, Target map та passive MITM proxy.
+- [x] SQLite History для Repeater, Intruder і збережених proxy exchange.
+- [x] `run-engine.sh` із перевіркою health, автоматичним запуском engine,
+  Python virtualenv і Django migrations.
+- [x] Docker Compose для engine і web із loopback-портами `8000`, `8080`,
+  `8081`.
+- [x] Автоматичне створення локального CA у `data/ca/ca.crt` і
   `data/ca/ca.key`.
-- [x] Логування engine та Django без запису payload, body і заголовків у
-  діагностичні логи.
+- [x] Логування без запису payload, body та заголовків до діагностичних логів.
 
-### Repeater, Intruder і HTTP-виконання
+### Repeater та Intruder
 
-- [x] Повний raw HTTP editor для Repeater та Intruder.
-- [x] Передавання запиту Traffic/History у Repeater та Intruder.
-- [x] Для Repeater та Intruder імпорт відкриває окрему робочу вкладку.
-- [x] Режими Intruder: Sniper, Battering Ram, Pitchfork і Cluster Bomb.
+- [x] Єдиний raw HTTP editor для Repeater і Intruder.
+- [x] Передавання запитів із Traffic/History до Repeater та Intruder.
 - [x] Маркери `§name§`, `{{name}}` і `%name%`.
-- [x] Payload dictionaries і transformations.
-- [x] Візуальний редактор transformations зі збереженням JSON-формату API.
-- [x] Попередній перегляд payload після transformations.
-- [x] Підрахунок jobs до запуску та контроль кількості workers.
-- [x] Налаштовувана затримка між Intruder-запитами.
-- [x] Pause/resume/cancel атаки збереженням уже отриманих результатів.
-- [x] Постійний `attack_id`, polling прогресу та відновлення polling після
-  перезавантаження без автоматичного скасування.
-- [x] Окреме відображення completed, failed та pending jobs.
-- [x] Фільтри й сортування результатів Intruder за станом, часом, розміром і
-  payload.
-- [x] Збереження конфігурації атаки та повторний запуск.
-- [x] Експорт результатів Intruder у JSON і CSV.
-- [x] Збереження Intruder results у History під час виконання атаки.
-- [x] Incremental polling і worker pool для великих наборів jobs.
+- [x] Режими Sniper, Battering Ram, Pitchfork і Cluster Bomb.
+- [x] Dictionaries, transformations, preview transformed payloads і
+  попередній підрахунок jobs.
+- [x] Bounded worker pool, incremental polling, `since`, `limit` і
+  `result_offset`.
+- [x] Pause/resume/cancel зі збереженням уже отриманих результатів.
+- [x] Відновлення polling після перезавантаження сторінки без автоматичного
+  скасування атаки.
+- [x] Фільтрація, сортування, повні request/response inspectors і експорт
+  Intruder у JSON/CSV.
+- [x] Збереження конфігурацій Intruder і повторний запуск.
+- [x] Збереження HTTP-результатів Intruder у History під час виконання.
 
-### Traffic, History і передавання даних
+### Traffic і History
 
-- [x] Live Traffic через SSE з pending/completed lifecycle.
-- [x] Оновлення pending event відповіддю без створення дубліката.
-- [x] Відновлення SSE через event cursor і replay snapshot.
-- [x] Сортування Traffic за часом, host, method та URL.
-- [x] Очищення Traffic через `Clear` із повним скиданням snapshot, cursor та
-  browser cache.
-- [x] Перегляд повного raw request/response.
-- [x] Пошук History за заголовками й тілом відповіді через backend/API.
+- [x] Live Traffic через SSE з lifecycle `pending` → `completed`.
+- [x] Оновлення pending event без створення дубліката.
+- [x] SSE reconnect через event cursor і replay backlog.
+- [x] Сортування Traffic за часом, host, method і URL.
+- [x] Повний raw request/response, binary body у base64/hex із content type.
 - [x] Tags і notes для History/Traffic.
-- [x] Видалення вибраних History records та експорт вибраних записів.
-- [x] Експорт повного HTTP exchange у JSON і файл.
-- [x] Передавання request і response з History/Traffic у Comparer та Decoder.
-- [x] Передавання response у Decoder відкриває нову вкладку, не перезаписуючи
-  вкладку з request.
-- [x] Бінарні response bodies відображаються через base64/hex із початковим
-  content type.
+- [x] Вибіркове та масове видалення History.
+- [x] Експорт та імпорт History JSON.
+- [x] Збереження окремого Traffic exchange через **Save row**.
+- [x] Збереження, перелік, перегляд та імпорт Traffic sessions як JSON bundle
+  через backend API.
+- [x] Передавання request/response із History та Traffic у Comparer і Decoder.
 
 ### Target, OSINT і Scanner
 
-- [x] Target map з асинхронним обходом, progress, cancel, pages/depth/delay
-  limits і same-origin режимом.
-- [x] Виявлення HTML links/forms, JS, CSS, JSON, robots.txt та sitemap.xml.
+- [x] Асинхронний Target map з progress, cancel, `max_pages`, `max_depth`,
+  `delay_ms` і `same_origin`.
+- [x] Виявлення HTML links/forms, JS/CSS/JSON URLs, `robots.txt`,
+  `sitemap.xml`, `Sitemap:` і XML `<loc>`.
 - [x] Експорт Target map у JSON, CSV, HTML і текстове дерево.
-- [x] OSINT: DNS/IP, HTTP, redirects, technologies, cookies, security
-  headers, discovery та пасивні WAF-сигнали.
+- [x] OSINT: DNS/IP, MX/NS/TXT, HTTP metadata, redirects, technologies,
+  cookies, security headers, discovery і пасивні WAF-сигнали.
 - [x] Scanner Pro / Safe CMS Recon із bounded read-only перевірками.
-- [x] Scanner findings із severity, evidence та recommendation.
-- [x] Експорт Scanner у JSON і CSV.
-- [x] Явне обмеження Scanner режимом без exploit, fuzzing, brute force та
-  bypass.
+- [x] Scanner findings із severity, evidence і recommendation.
+- [x] Експорт Scanner у JSON/CSV та обмеження без exploit, fuzzing, brute
+  force й access-control bypass.
 
-### Comparer, Decoder і workspace
+### Decoder, Comparer і workspace
 
-- [x] Comparer у режимах Words і Bytes із підсвічуванням відмінностей.
-- [x] Decoder для URL, Base64, Base64 URL-safe, HTML, Hex, JSON і SHA-256.
-- [x] Byte encode: текст у 8-бітні двійкові групи.
-- [x] Byte decode: двійкові групи або десяткові значення байтів у текст.
-- [x] Decoder працює в режимі однієї вибраної операції без незрозумілого
-  ланцюжка.
-- [x] Base64 decode розпізнає службовий префікс бінарного response:
-  `[binary content/type; base64]`.
-- [x] Browser-like workspaces для Repeater, Intruder, Target, OSINT, Scanner,
-  Comparer і Decoder.
+- [x] Comparer у режимах Words і Bytes.
+- [x] Decoder для URL, Base64, Base64 URL-safe, HTML, Hex, byte
+  encode/decode, JSON і SHA-256.
+- [x] Browser-like workspaces для основних інструментів.
 - [x] Створення, перейменування, закриття та відновлення вкладок.
 - [x] Автозбереження workspace, Save session, Export/Import session JSON.
 - [x] Payload generators: числа, діапазони, UUID, дати, списки слів і
   шаблони.
 
-### Тести та документація
+### AI chat
 
-- [x] Smoke script для health, Repeater, Intruder, History і SSE.
-- [x] README з локальним і Docker Compose запуском, proxy, CA та очищенням
-  контейнерів.
-- [x] Документ `BUG_BOUNTY_AND_DEVELOPERS.md` для bug reports, пропозицій і
-  участі в розробці.
+- [x] Conversational AI-вкладка з явним прикріпленням Repeater, Intruder,
+  Target Map, OSINT, Scanner, History і Traffic evidence.
+- [x] Provider adapters для Ollama, OpenAI, Anthropic, OpenRouter, Gemini,
+  Groq, Mistral і custom OpenAI-compatible endpoint.
+- [x] Введення API key у UI або через змінні середовища.
+- [x] Компактний context без автоматичного завантаження всього workspace.
+- [x] Ізоляція від tools, shell, filesystem, History API, Traffic API та
+  arbitrary HTTP.
+- [x] SPA fallback fingerprinting і black-box observable-change verification.
 
-## Не виконано
+### Перевірка та документація
 
-### Надійність і покриття тестами
+- [x] Go tests, Django checks/tests і smoke script для основних сервісів.
+- [x] Перевірка inline JavaScript через `node --check`.
+- [x] README з локальним запуском, Docker Compose, CA, passive proxy та
+  налаштуванням AI-токена.
+- [x] Документація `AGENTS.md`, `AGENT_RUNTIME.md` та
+  `AGENT_USER_GUIDE.md`.
 
-- [ ] Додати тести для помилок engine, malformed transformations, порожніх
-  словників і граничних випадків byte/base64 workflow.
-- [ ] Додати структуровані log fields для машинного аналізу.
-- [ ] Додати CI для Go tests, Django tests, JavaScript syntax checks та
-  міграцій.
-- [ ] Додати Playwright smoke-тести навігації, Decoder, workspace tabs і
-  passive Scanner.
-- [ ] Додати Selenium smoke-тест базового Python-оточення.
-- [ ] Відокремити локальні generated files (`db.sqlite3`, `__pycache__`,
-  logs) від початкових змін перед коммітом.
-- [ ] Розширити E2E-набір стабільним локальним test server.
+## Поточні обмеження
 
-### Traffic і History
+- [ ] Traffic Store engine залишається in-memory: незбережені live events
+  зникають після перезапуску engine або `Clear`.
+- [ ] Target є статичним HTTP crawler: JavaScript не виконується, форми не
+  надсилаються, DOM-маршрути після browser actions не збираються.
+- [ ] Немає окремої моделі Project: поточний workspace зберігається локально
+  у browser storage та session JSON.
+- [ ] Findings Scanner ще не об'єднані в єдиний Findings Center.
+- [ ] AI не підтримує streaming, export conversation і видимий provider
+  latency/context-size status.
+- [ ] Повноцінний Burp-подібний Intercept навмисно відсутній: події доступні
+  у Traffic і можуть передаватися в інші вкладки.
 
-- [ ] Додати збереження Traffic snapshot між перезапусками engine.
-- [ ] Додати імпорт окремого Traffic JSON.
-- [ ] Додати повторне надсилання запису однією кнопкою з новим результатом
-  поруч зі старим.
-- [ ] Перенести довгоживучий Traffic cache з `localStorage` до IndexedDB.
+## Наступні етапи
+
+Порядок визначено за впливом на надійність, відтворюваність і безпеку
+авторизованого тестування.
+
+### Етап 1. Надійність і регресійне покриття
+
+- [ ] Додати CI для Go tests, Django tests, migrations і JavaScript syntax.
+- [ ] Додати локальний deterministic test server для E2E та smoke-тестів.
+- [ ] Покрити malformed transformations, порожні dictionaries, byte/base64,
+  binary responses і помилки engine.
+- [ ] Додати regression-тести для всіх UI-кнопок evidence attachment.
+- [ ] Додати Playwright smoke-тести навігації, workspace tabs, Decoder,
+  Traffic SSE та Scanner.
+- [ ] Додати структуровані log fields для машинного аналізу без секретів.
+
+### Етап 2. Traffic, History і відтворюваність
+
+- [ ] Додати UI для збереження та відновлення Traffic sessions.
+- [ ] Додати повторне надсилання History/Traffic exchange однією кнопкою з
+  новим результатом поруч зі старим.
+- [ ] Перенести великий локальний cache із `localStorage` до IndexedDB.
 - [ ] Додати віртуалізований список Traffic для десятків тисяч подій.
 - [ ] Додати режими `Live`, `Paused` і `Buffered`.
 - [ ] Додати фільтри Traffic за host, method, status, URL, розміром, часом і
   джерелом.
-- [ ] Додати видимий ліміт пам'яті та повідомлення про видалення найстаріших
-  подій.
-- [ ] Додати targeted stress tests для 1k/10k/50k подій і body cache.
+- [ ] Додати контрольований memory limit і regression stress tests для
+  1k/10k/50k events.
 
-### Intruder
+### Етап 3. Intruder і Scanner safety
 
-- [ ] Додати пресети transformations.
-- [ ] Додати перевірку відповідності кількості markers і словників.
-- [ ] Додати імпорт словників із кількох файлів і збереження набору
-  словників у JSON.
-- [ ] Додати повторний запуск тієї самої атаки безпосередньо з History.
-- [ ] Додати профілі `Discovery`, `Parameter testing`, `Headers` та
-  `Rate-limited audit`.
-- [ ] Додати видимі RPS limit, concurrency, timeout, retry policy та circuit
+- [ ] Додати перевірку відповідності кількості markers і dictionaries.
+- [ ] Додати імпорт dictionaries із файлів та збереження наборів у JSON.
+- [ ] Додати видимі RPS limit, concurrency, timeout, retry policy і circuit
   breaker.
-- [ ] Додати оцінку навантаження до старту: jobs, concurrency і очікуваний
+- [ ] Додати оцінку навантаження до старту: jobs, concurrency та очікуваний
   обсяг трафіку.
-- [ ] Автоматично зупиняти атаку при серії `429`, `503`, timeout або ознаках
-  деградації target.
-- [ ] Додати явне destructive/local-lab confirmation для небезпечних
-  сценаріїв.
+- [ ] Автоматично призупиняти операцію після серії `429`, `503`, timeout або
+  ознак деградації target.
+- [ ] Додати Scanner-профілі `Generic Web`, `CMS`, `API` та
+  `Security Headers`.
+- [ ] Додати confidence score, baseline/current diff і повторну перевірку
+  окремого Scanner finding.
 
-### Browser-driven Target
-
-- [ ] Додати окремий Chromium/Playwright worker для виконання JavaScript.
-- [ ] Додати безпечне заповнення й надсилання форм із явним режимом запуску.
-- [ ] Збирати DOM-маршрути, що з'являються після дій користувача та виконання
-  JavaScript.
-
-### TOR і проксі-профілі
-
-- [ ] Додати профілі вихідного з'єднання: пряме підключення, HTTP proxy,
-  HTTPS proxy та SOCKS5.
-- [ ] Додати окремий режим маршрутизації через локальний TOR SOCKS5 endpoint
-  із явним налаштуванням host і port.
-- [ ] Додати вибір proxy-профілю для Repeater, Intruder, Target, OSINT,
-  Scanner, workflow runner та browser-driven worker.
-- [ ] Додати перевірку активного маршруту, proxy/TOR connectivity та видимий
-  health status без розкриття секретів у логах.
-- [ ] Додати налаштування DNS resolution, proxy bypass для локальних адрес і
-  окремі правила для HTTP та HTTPS.
-- [ ] Додати import/export proxy profiles без збереження паролів і ключів у
-  незашифрованому вигляді.
-- [ ] Додати інтеграційні тести з локальними HTTP proxy, SOCKS5 fixture та
-  mock TOR endpoint; не вважати доступ до публічної TOR-мережі обов'язковим
-  для CI.
-- [ ] Додати попередження про зміну source IP, latency, нестабільність
-  ланцюжка та можливе витікання DNS до запуску довгих операцій.
-
-### AI та автономний агент
-
-- [x] Додати компактну AI-вкладку з conversational chat.
-- [x] Додати явне прикріплення Repeater, Intruder, Target Map, OSINT, Scanner,
-  History і Traffic evidence.
-- [x] Додати provider adapters для Ollama та OpenAI-compatible providers.
-- [x] Ізолювати AI chat від tool execution, shell, filesystem і arbitrary HTTP.
-- [x] Передавати provider-у лише evidence після явного натискання кнопки.
-- [x] Залишити scope, execution profile, budget, rate-limit, concurrency та
-  audit checks активних інструментів.
-- [x] Додати SPA fallback fingerprints і black-box observable-change
-  verification.
-- [ ] Додати preview прикріплених даних і експорт conversation.
-- [ ] Додати provider latency/context-size status і streaming.
-- [ ] Додати contract fixtures для великих binary та SPA responses.
-- [ ] Додати негативні тести на prompt injection із HTTP body, headers,
-  HTML, JavaScript, History, Traffic та зовнішніх відповідей.
-
-### Project Workspace
+### Етап 4. Project Workspace і Findings Center
 
 - [ ] Ввести модель `Project` із target scope, environment, вкладками,
-  Traffic filters, notes, tags, findings та історією запусків.
-- [ ] Додати `New Project`, `Open Project`, `Save Project` і `Close Project`.
-- [ ] Додати версії snapshot, автозбереження та відновлення після аварійного
-  перезавантаження.
-- [ ] Додати попередження про незбережені зміни.
-- [ ] Додати експорт/імпорт project JSON із перевіркою формату.
-- [ ] Підтримати окремі проєкти для різних локальних стендів і профілів.
-- [ ] Не зберігати cookies, Authorization, JWT, CA-ключі та інші секрети без
-  явного маскування.
-
-### Findings Center і звіти
-
-- [ ] Створити єдину модель finding із source, target, endpoint, severity,
-  confidence, evidence, recommendation та timestamps.
+  Traffic sessions, notes, tags, findings і журналом запусків.
+- [ ] Додати `New Project`, `Open Project`, `Save Project`, `Close Project`,
+  snapshot versions та відновлення після аварійного перезавантаження.
+- [ ] Додати єдину модель finding із source, target, endpoint, severity,
+  confidence, evidence, recommendation і timestamps.
 - [ ] Додати стани `New`, `Confirmed`, `False positive`, `Accepted risk` і
   `Fixed`.
-- [ ] Додати Findings-вкладку з пошуком, фільтрами та групуванням.
-- [ ] Додати дії `Send to Repeater`, `Send to Comparer` і повторну перевірку
-  конкретного finding.
-- [ ] Показувати heuristic CMS/WAF результати як `Unconfirmed` із confidence.
-- [ ] Додати diff результатів між двома Scanner runs.
-- [ ] Додати експорт звітів у JSON, CSV, Markdown та HTML із evidence.
-- [ ] Додати маскування секретів у findings та експортованих звітах.
+- [ ] Додати Findings-вкладку з пошуком, фільтрами, групуванням і діями
+  `Send to Repeater`, `Send to Comparer` та повторною перевіркою.
+- [ ] Додати експорт findings у JSON, CSV, Markdown і HTML.
+- [ ] Додати маскування cookies, JWT, Authorization та API keys у findings і
+  експорті за замовчуванням.
 
-### Scanner Pro
+### Етап 5. Browser-driven Target
 
-- [ ] Розділити профілі `Generic Web`, `CMS`, `API` та `Security Headers`.
-- [ ] Додати confidence score і evidence для кожної перевірки.
-- [ ] Додати повторний запуск одного finding без повного сканування.
-- [ ] Додати порівняння `baseline` і `current` scan.
-- [ ] Додати видимий scope та режим `LOCAL LAB` перед запуском.
-- [ ] Додати bounded concurrency, timeout, rate limit і cancel для Scanner.
-- [ ] Додати regression fixtures для generic local HTTP server.
+- [ ] Додати окремий Chromium/Playwright worker для виконання JavaScript.
+- [ ] Додати явний режим безпечного заповнення та надсилання форм.
+- [ ] Збирати DOM-маршрути, що з'являються після дій користувача і виконання
+  JavaScript.
+- [ ] Ізолювати browser-driven worker від статичного Target crawler і
+  покривати його локальними fixtures.
 
-### Workflows і collections
+### Етап 6. Явні proxy-профілі
 
-- [ ] Додати collections запитів із групами та описами.
-- [ ] Додати workflow steps: request, delay, condition, extract, assertion і
-  export.
-- [ ] Додати environment variables та підстановку token, cookie, CSRF і
-  response fields.
-- [ ] Додати pause/resume/cancel і детальний журнал кожного step.
-- [ ] Додати умови за HTTP status, header, JSON path та latency.
-- [ ] Додати налаштовувані defaults і rate limit для workflow runner.
-- [ ] Додати локальні fixtures: login → discover → scan → findings → report.
+- [x] Додати профілі direct, SOCKS5 і TOR як SOCKS5-профіль.
+- [x] Додати єдиний глобальний маршрут для Repeater, Intruder, Target, OSINT,
+  Scanner і upstream passive MITM.
+- [x] Додати UI-перемикач маршруту з адресою SOCKS5 і явним Apply route.
+- [x] Додати Docker Compose Tor container із upstream `tor:9050`.
+- [ ] Додати health check маршруту, DNS policy, proxy bypass для локальних
+  адрес і видимий статус source IP/latency.
+- [ ] Додати локальний override маршруту для окремої вкладки або операції.
+- [ ] Додати профілі HTTP proxy та HTTPS proxy.
+- [ ] Додати import/export proxy profiles без збереження паролів і ключів у
+  незашифрованому вигляді.
+- [ ] Покрити профілі локальними HTTP proxy/SOCKS5 fixtures; доступ до
+  публічної TOR-мережі не повинен бути вимогою CI.
 
-### UX та операційна безпека
+### Етап 7. AI chat без автономного виконання
 
-- [ ] Додати глобальну target bar з target, scope, режимом і health status.
-- [ ] Показувати `TARGET`, `MODE` та `AUTHORIZED` у серійних операціях.
-- [ ] Додати health indicators для Django, Go engine, proxy та target.
-- [ ] Додати глобальні дії `Pause jobs`, `Cancel jobs` і
-  `Clear volatile data`.
-- [ ] Додати context actions `Send to Repeater`, `Add to Intruder`,
-  `Add to Scanner` та `Compare`.
-- [ ] Додати генерацію curl, fetch і Python для вибраного HTTP exchange.
-- [ ] Додати split-view request/response, sticky headers та hotkeys.
-- [ ] Додати audit log для запусків, destructive confirmations та exports.
-- [ ] Додати видимий профіль `Local Lab` без прихованого allowlist, SSRF
-  блокування або автоматичної заборони зовнішніх цілей.
-- [ ] Маскувати cookies, JWT, Authorization та API keys у Traffic, History і
-  exports за замовчуванням.
+- [ ] Додати preview прикріплених даних перед відправленням.
+- [ ] Додати export conversation разом із прикріпленими evidence.
+- [ ] Додати provider latency, retry і context-size status.
+- [ ] Додати streaming для провайдерів, які його підтримують.
+- [ ] Додати contract fixtures для великих binary та SPA responses.
+- [ ] Додати негативні тести на prompt injection у HTTP body, headers, HTML,
+  JavaScript, History, Traffic та зовнішніх відповідях.
 
-## Поточні обмеження
+## Не планується без окремого обґрунтування
 
-- Traffic Store engine залишається in-memory і очищається після restart або
-  через `Clear`.
-- Target є статичним HTTP crawler: JavaScript не виконується, форми не
-  надсилаються, DOM-маршрути після browser actions не збираються.
-- Decoder виконує одну вибрану операцію за раз; для бінарних тіл потрібен
-  окремий base64/hex або file-preview workflow.
-- Повноцінний Burp-подібний Intercept навмисно не планується: події доступні
-  у Traffic і можуть передаватися в Repeater або Intruder.
+- autonomous observe → plan → execute loops;
+- durable background missions і довгоживуче сховище lifecycle events для AI;
+- shell, arbitrary filesystem, arbitrary HTTP або post-compromise execution;
+- автоматичне передавання всього workspace кожним повідомленням;
+- приховане masking/redaction context;
+- приховані SSRF, host, network, allowlist або scope-блокування замість
+  явного контролю користувача;
+- повноцінний Intercept, якщо він дублює live Traffic без чіткої користі.
 
 ## Правила пріоритизації
 
-1. Спочатку виправляти втрату або спотворення HTTP-даних і стабільність
-   Traffic.
-2. Потім забезпечити project/session recovery та відтворюваність запусків.
-3. Потім об'єднати findings і покращити точність Scanner.
-4. Потім додавати workflows, Intruder safety та browser-driven automation.
-5. Proxy/TOR routing спочатку реалізовувати як явні профілі з локальними
-   fixtures і health checks, а не як приховану зміну маршруту.
-6. AI вкладку та автономного агента запускати після типізованого tool API,
-   policy checks, audit log і відтворюваних provider contract tests.
-7. Лише після цього розширювати UI навколо вже працюючих API.
+1. Не втрачати та не спотворювати HTTP-дані.
+2. Забезпечити відтворюваність через тести, Traffic sessions і Project
+   Workspace.
+3. Додати safety controls для Intruder і Scanner до розширення автоматизації.
+4. Об'єднати результати в Findings Center.
+5. Додати browser-driven Target лише окремим worker із локальними fixtures.
+6. Реалізовувати proxy/TOR як явні профілі з health checks, а не як приховану
+   зміну маршруту.
+7. Розширювати AI chat лише через provider contract tests і збереження
+   ізоляції від виконання дій.
 8. Для кожної зміни додавати targeted test або відтворюваний smoke-сценарій.
-9. Не додавати приховані policy/resource restrictions: SSRF, host, network,
-   allowlist або scope блокування замість явного контролю користувача.

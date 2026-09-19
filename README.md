@@ -2,67 +2,55 @@
 
 <img width="1141" height="356" alt="Screenshot 2026-09-18 at 11-53-24 Screenshot_2026-09-18_11-48-37 png (PNG Image 1366 × 733 pixels) — Scaled (84_)" src="https://github.com/user-attachments/assets/e2dfb7f5-18b1-41d5-acd1-83fad058a846" />
 
+
+
 # RequestRider
 
-Локальний браузерний QA-інструмент для ручного аналізу, повторного
-надсилання та безпечного дослідження HTTP-трафіку. Проєкт поєднує Django UI,
-Go engine, SQLite History і локальний passive MITM proxy.
+RequestRider — локальний браузерний QA-інструмент для ручного аналізу,
+повторного надсилання та безпечного дослідження HTTP-трафіку. Проєкт поєднує
+Django UI, Go engine, SQLite History і локальний passive MITM proxy.
 
-> **Важливо:** RequestRider призначений для власних або явно дозволених
-> цілей. Intruder, Target, OSINT і Scanner Pro не замінюють дозвіл на
-> тестування. Не використовуйте інструмент для обходу доступу, brute force,
-> експлуатації або тестування чужих систем.
+> Використовуйте інструмент лише для власних систем або цілей, на які маєте
+> явний дозвіл. Intruder, Target, OSINT і Scanner Pro не замінюють дозвіл на
+> тестування та не призначені для обходу доступу, brute force або експлуатації
+> чужих систем.
 
-## Що вже працює
+## Можливості
 
-- **Repeater** — редагування повного raw HTTP-запиту та повторне надсилання.
-- **Intruder** — Sniper, Battering Ram, Pitchfork і Cluster Bomb,
-  dictionaries, transformations, worker pool, pause/resume/cancel, polling і
-  експорт результатів.
-- **Target** — асинхронна карта сайту з обмеженнями pages/depth/delay,
-  same-origin режимом, cancel, фільтрами, сортуванням і JSON/CSV/HTML/tree
-  експортом.
-- **OSINT** — DNS/IP, HTTP, redirects, technologies, cookies, security
-  headers, discovery і пасивні WAF-сигнали.
-- **Scanner Pro / Safe CMS Recon** — bounded read-only перевірки авторизованої
-  цілі: CMS/public paths, admin/API endpoints, backup/debug/configuration
-  exposure, TLS, cookies, HTTP methods, headers і WAF. Findings мають
-  severity `INFO / LOW / MEDIUM / HIGH`, evidence та recommendation.
-- **Traffic** — live-потік passive proxy, Repeater і Intruder через SSE.
-  Pending-запит згодом оновлюється відповіддю без створення дубліката.
-- **History** — SQLite-сховище завершених Repeater/Intruder exchange з
-  пошуком, tags/notes, переглядом повного запиту/відповіді та експортом.
-- **Comparer** — порівняння двох запитів або відповідей у режимах Words і
-  Bytes.
+### Робочі вкладки
+
+- **Repeater** — редагування та повторне надсилання повного raw HTTP-запиту.
+  Підтримуються Host/Path overrides, `Ctrl+Enter`/`Cmd+Enter`, перегляд
+  відповіді та збереження exchange у History.
+- **Intruder** — режими Sniper, Battering Ram, Pitchfork і Cluster Bomb,
+  dictionaries, transformations, bounded worker pool, pause/resume/cancel,
+  polling та експорт результатів.
+- **Target** — статична карта сайту без виконання JavaScript і HTML-форм.
+  Є обмеження pages/depth/delay, same-origin режим, cancel, фільтри,
+  сортування та експорт у JSON/CSV/HTML/tree.
+- **OSINT** — DNS/IP, MX/NS/TXT, HTTP metadata, redirects, technologies,
+  cookies, security headers, robots/sitemap discovery і пасивні WAF-сигнали.
+- **Scanner Pro** — обмежені read-only перевірки явно вказаної цілі:
+  CMS/public paths, admin/API endpoints, backup/debug/config exposure, TLS,
+  cookies, HTTP methods, headers і WAF-сигнали.
+- **Traffic** — live-потік passive proxy, Repeater та Intruder через SSE.
+- **History** — SQLite-сховище завершених exchange з пошуком, tags/notes,
+  переглядом повного запиту й відповіді та експортом.
+- **Comparer** — порівняння запитів або відповідей у режимах Words і Bytes.
 - **Decoder** — URL, Base64, Base64 URL-safe, HTML entities, Hex, byte
-  decoding, JSON
-  і SHA-256 у режимі однієї вибраної операції.
-- **Browser-like workspaces** — окремі вкладки для Repeater, Intruder,
-  Target, OSINT, Scanner, Comparer і Decoder.
-- **Project Workspace** — автозбереження вкладок і стану, явний Save session,
-  Export/Import session JSON, відновлення після reload.
-- **Target Map preview** — дерево папок із кнопками `Collapse all` і
-  `Expand all`.
-- **Локальний CA** — engine автоматично створює `data/ca/ca.crt` і
-  `data/ca/ca.key` для passive HTTPS proxy.
+  encoding/decoding, JSON pretty/minify та SHA-256.
+- **AI** — чат із вибраним LLM-провайдером. До AI передаються лише дані, які
+  оператор явно прикріпив кнопкою `Send ... to AI`.
+- **Workspace** — вкладки та їхній стан автоматично зберігаються у браузері;
+  доступні Save session і Export/Import session JSON.
 
-Поки що RequestRider використовує пряме вихідне з'єднання для активних
-запитів, а passive proxy працює на локальному `127.0.0.1:8080`. AI-вкладка є
-компактним conversational chat: оператор вручну прикріплює Repeater, Intruder,
-Target Map, OSINT, Scanner, History або Traffic і просить LLM проаналізувати
-лише ці дані. Поточний AI API та правила описані в
-[`AGENT_RUNTIME.md`](AGENT_RUNTIME.md), [`AGENT_USER_GUIDE.md`](AGENT_USER_GUIDE.md)
-і [`LLM_ROADMAP.md`](LLM_ROADMAP.md).
+Scanner Pro не виконує exploit, fuzzing, brute force, authentication attacks
+або access-control bypass. HTTP `200` для публічного шляху — це сигнал для
+ручної перевірки, а не доказ уразливості.
 
-## Найшвидший запуск
+## Швидкий запуск
 
-Потрібні:
-
-- Go;
-- Python 3;
-- `curl`;
-- `virtualenv` або доступний Python `venv` для автоматичного створення;
-  `web/.venv`;
+Потрібні Go, Python 3, `curl` і `venv` або `virtualenv`.
 
 Із кореня репозиторію:
 
@@ -70,53 +58,37 @@ Target Map, OSINT, Scanner, History або Traffic і просить LLM про�
 ./run-engine.sh
 ```
 
-Скрипт:
+Скрипт запускає Go engine, створює `web/.venv`, встановлює залежності,
+застосовує Django-міграції та запускає UI.
 
-1. перевіряє Go engine на `http://127.0.0.1:8081/health`;
-2. запускає engine, якщо він ще не працює;
-3. створює або відновлює `web/.venv`;
-4. встановлює Django-залежності з `web/requirements.txt`;
-5. застосовує Django-міграції до локальної SQLite-бази;
-6. запускає Django UI на `http://127.0.0.1:8000`.
+Після запуску:
 
-Після запуску відкрийте:
+- UI: <http://127.0.0.1:8000>
+- engine health: <http://127.0.0.1:8081/health>
+- passive HTTP proxy: `127.0.0.1:8080`
 
-- UI: <http://127.0.0.1:8000>;
-- engine health: <http://127.0.0.1:8081/health>;
-- passive proxy: `127.0.0.1:8080`.
-
-Зупинка foreground-процесу `run-engine.sh` завершує запущений ним engine.
-
-За замовчуванням усі локальні сервіси використовують loopback-адреси. Не
-змінюйте listen address на зовнішній інтерфейс без розуміння ризиків: UI,
-engine і CA proxy можуть обробляти повні HTTP-запити, заголовки, cookies та
-тіла.
-
-## Зворотний зв’язок і внесок у проєкт
-
-Повідомлення про помилки, пропозиції та запити щодо участі у розробці
-надсилайте на <cyberfuny@proton.me>. Детальні рекомендації наведені у
-файлі [`BUG_BOUNTY_AND_DEVELOPERS.md`](BUG_BOUNTY_AND_DEVELOPERS.md).
-Якщо engine уже працював до запуску скрипта, він не дублюється і не
-зупиняється скриптом.
-
-Для нестандартного CA або адреси engine:
+Якщо engine уже запущений, скрипт не створює другий процес. Для нестандартної
+конфігурації:
 
 ```bash
 CA_DIR=/path/to/ca ./run-engine.sh
 ENGINE_URL=http://127.0.0.1:8081 ./run-engine.sh
 ```
 
+Усі сервіси за замовчуванням використовують loopback. Не відкривайте UI, engine
+або proxy назовні без розуміння того, що вони можуть обробляти cookies,
+заголовки, тіла запитів та інші секретні дані.
+
 ### Ручний запуск
 
-Якщо потрібно запускати сервіси окремо:
+Термінал 1:
 
 ```bash
 cd engine
 go run .
 ```
 
-В іншому терміналі:
+Термінал 2:
 
 ```bash
 cd web
@@ -127,14 +99,10 @@ python manage.py migrate
 ENGINE_URL=http://127.0.0.1:8081 python manage.py runserver 127.0.0.1:8000
 ```
 
-Для Kali/Debian, де системний `venv` може не містити `pip`, використовуйте
-`virtualenv` або запускайте рекомендований `./run-engine.sh`.
-
 ### Docker Compose
 
-Docker-профіль запускає engine і Django UI у двох контейнерах. Не запускайте
-одночасно Docker і `./run-engine.sh`, оскільки вони використовують порти
-`8000`, `8080` і `8081`.
+Не запускайте Docker Compose одночасно з `./run-engine.sh`: обидва варіанти
+використовують порти `8000`, `8080` і `8081`.
 
 Для Docker Compose v2:
 
@@ -142,96 +110,187 @@ Docker-профіль запускає engine і Django UI у двох конт�
 docker compose up --build
 ```
 
-Для Kali/Debian з окремою командою Compose:
+Для систем, де використовується окрема команда Compose:
 
 ```bash
 docker-compose up --build
 ```
 
-Docker-адреси:
-
-- UI: <http://localhost:8000>;
-- engine health: <http://127.0.0.1:8081/health>;
-- proxy: `127.0.0.1:8080`.
-
-Після запуску перевірте сервіси:
+Перевірте запущені сервіси:
 
 ```bash
-docker-compose ps
+docker compose ps
 curl http://127.0.0.1:8081/health
 curl -I http://127.0.0.1:8000/
 ```
 
-Для passive proxy налаштуйте браузер або інший дозволений QA-інструмент на
-HTTP proxy `127.0.0.1:8080`. Для HTTPS імпортуйте сертифікат
-`data/ca/ca.crt` у довірене сховище клієнта. Файл `data/ca/ca.key` є
-приватним ключем і не повинен публікуватися або передаватися іншим людям.
-Після відкриття дозволеної цілі події можна переглядати у вкладці **Traffic**
-за адресою <http://127.0.0.1:8000>.
+Якщо у системі доступна лише команда `docker-compose`, замініть нею
+`docker compose` у наведених командах.
 
-Docker Compose не додає автоматично TOR або зовнішній proxy-маршрут. Для
-таких сценаріїв потрібні окремі майбутні proxy-профілі з явним health check,
-налаштуванням DNS і правилами обходу локальних адрес; не покладайтеся на
-випадкові змінні середовища або неперевірений proxy.
+Після запуску:
+
+- UI доступний на <http://localhost:8000>;
+- engine health доступний на <http://127.0.0.1:8081/health>;
+- passive proxy працює на `127.0.0.1:8080`.
+- контейнер Tor надає SOCKS5 upstream `tor:9050` всередині Compose-мережі та
+  публікує його як `127.0.0.1:9050` для локальної діагностики.
+
+Для passive proxy налаштуйте браузер або інший дозволений QA-інструмент на HTTP
+proxy `127.0.0.1:8080`. Для HTTPS імпортуйте `data/ca/ca.crt` до довіреного
+сховища клієнта. Файл `data/ca/ca.key` є приватним ключем, тому його не можна
+публікувати, передавати іншим людям або комітити.
 
 Зупинити контейнери без їх видалення:
 
 ```bash
-docker-compose stop
+docker compose stop
 ```
 
 Зупинити та видалити контейнери й мережу цього Compose-проєкту:
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 Видалити також образи цього Compose-проєкту:
 
 ```bash
-docker-compose down --rmi all
+docker compose down --rmi all
 ```
 
 Видалити образи та volumes цього Compose-проєкту:
 
 ```bash
-docker-compose down --rmi all -v
+docker compose down --rmi all -v
 ```
 
-Не використовуйте `docker system prune`, якщо не хочете видалити ресурси
-інших Docker-проєктів. Перевірити, що сервіси зупинені, можна командою:
+Для старої команди Compose використовуйте відповідно `docker-compose stop`,
+`docker-compose down`, `docker-compose down --rmi all` і
+`docker-compose down --rmi all -v`.
+
+Не використовуйте `docker system prune`, якщо не хочете видалити ресурси інших
+Docker-проєктів.
+
+Переконатися, що сервіси зупинені, можна командами:
 
 ```bash
-docker-compose ps
+docker compose ps
 docker ps
 ```
 
-Локальний запуск використовує loopback. Docker може використовувати
-`0.0.0.0` усередині контейнера лише для опублікованих Docker-портів.
+### Маршрутизація через SOCKS5/TOR
 
-## Збереження вкладок і сесій
+У верхній панелі UI доступний глобальний профіль маршруту:
 
-Стан workspace зберігається локально у браузері й не надсилається на сервер.
-Автоматично зберігаються:
+- **Direct** — пряме з'єднання без upstream proxy;
+- **SOCKS5** — SOCKS5-адреса з поля `127.0.0.1:9050` або іншої вказаної адреси;
+- **TOR** — той самий SOCKS5-механізм із профільною назвою для локального Tor.
 
-- усі вкладки та їхні назви;
-- активна вкладка;
-- поля Repeater, Intruder, Target, OSINT, Scanner, Comparer і Decoder;
-- dictionaries, transformations і стан Decoder;
-- Target map, Scanner findings, OSINT/Comparer результати;
-- мова інтерфейсу.
+Для локального Tor запустіть Tor із SOCKS5 на `127.0.0.1:9050`, виберіть
+**TOR** і натисніть **Apply route**. Для Docker Compose виберіть **TOR** та
+вкажіть `tor:9050`, оскільки engine у контейнері не може звернутися до
+loopback-адреси host як до іншого контейнера.
 
-У верхній панелі доступні:
+Маршрут застосовується до Repeater, Intruder, Target, OSINT і Scanner, а також
+до upstream-з'єднань passive MITM. Ланцюжок для браузера залишається таким:
 
-| Кнопка | Призначення |
-|---|---|
-| **Save session** | Явно записує поточний snapshot у browser storage |
-| **Export** | Завантажує session JSON-файл |
-| **Import** | Відновлює вкладки та стан із session JSON |
+```text
+Browser -> RequestRider MITM :8080 -> SOCKS5/TOR :9050 -> target
+```
 
-Session snapshot не містить `data/ca/ca.key`, серверних файлів, SQLite або
-інших приватних файлів. Не зберігайте у session JSON секрети, якщо вони
-випадково введені у поля запиту.
+Для активних інструментів повторний прохід через `:8080` не використовується:
+вони застосовують той самий outbound transport напряму. Це не створює
+подвійного MITM, але результати Repeater/Intruder усе одно публікуються у
+спільний Traffic Store.
+
+Після зміни профілю нові з'єднання використовують новий маршрут; idle
+з'єднання закриваються. Якщо SOCKS5/Tor недоступний, запит завершується явною
+помилкою, а не успішним fallback на Direct.
+
+## Налаштування AI
+
+Відкрийте вкладку **AI**, виберіть провайдера та за потреби заповніть:
+
+1. **Endpoint** — URL API;
+2. **Model** — назва моделі;
+3. **API key** — токен або ключ доступу.
+
+Поле **API key** є password-полем і не зберігається у workspace/session JSON.
+Для Ollama токен не потрібен: запустіть Ollama локально та встановіть вибрану
+модель, наприклад:
+
+```bash
+ollama pull llama3.1
+```
+
+Підтримуються Ollama, OpenAI, Anthropic Claude, OpenRouter, Google Gemini, Groq,
+Mistral і Custom OpenAI-compatible. Для вбудованих провайдерів endpoint і
+модель мають значення за замовчуванням; їх можна змінити в UI.
+
+### Додавання токена через змінні середовища
+
+Замість введення ключа в UI його можна передати процесу Django. Назви змінних:
+
+| Провайдер | Токен | Endpoint і модель |
+|---|---|---|
+| OpenAI | `OPENAI_LLM_API_KEY` | `OPENAI_LLM_ENDPOINT`, `OPENAI_LLM_MODEL` |
+| Anthropic | `ANTHROPIC_LLM_API_KEY` | `ANTHROPIC_LLM_ENDPOINT`, `ANTHROPIC_LLM_MODEL` |
+| OpenRouter | `OPENROUTER_LLM_API_KEY` | `OPENROUTER_LLM_ENDPOINT`, `OPENROUTER_LLM_MODEL` |
+| Gemini | `GEMINI_LLM_API_KEY` | `GEMINI_LLM_ENDPOINT`, `GEMINI_LLM_MODEL` |
+| Groq | `GROQ_LLM_API_KEY` | `GROQ_LLM_ENDPOINT`, `GROQ_LLM_MODEL` |
+| Mistral | `MISTRAL_LLM_API_KEY` | `MISTRAL_LLM_ENDPOINT`, `MISTRAL_LLM_MODEL` |
+| Custom OpenAI-compatible | `AGENT_LLM_API_KEY` | `AGENT_LLM_ENDPOINT`, `AGENT_LLM_MODEL` |
+
+Приклад запуску:
+
+```bash
+OPENAI_LLM_API_KEY='ваш-токен' ./run-engine.sh
+```
+
+Щоб не зберігати ключ в історії shell, задайте змінну в оточенні перед запуском:
+
+```bash
+export OPENAI_LLM_API_KEY='ваш-токен'
+./run-engine.sh
+```
+
+Для Custom OpenAI-compatible endpoint:
+
+```bash
+export AGENT_LLM_ENDPOINT='https://llm.example.test/v1/chat/completions'
+export AGENT_LLM_MODEL='your-model'
+export AGENT_LLM_API_KEY='ваш-токен'
+./run-engine.sh
+```
+
+Віддалені endpoint мають використовувати HTTPS і не можуть вказувати на
+loopback. Локальний Ollama дозволений лише через HTTP на `127.0.0.1`,
+`localhost` або `::1`.
+
+### Як передати дані до AI
+
+AI не отримує весь workspace автоматично і не має доступу до shell, filesystem,
+History API, Traffic API або Go engine. Спочатку виберіть потрібні дані та
+натисніть `Send ... to AI` у Repeater, Intruder, Target, OSINT, Scanner, History
+або Traffic. Потім поставте запитання у вкладці AI.
+
+Прикріплені дані можуть містити Authorization, cookies, JWT, API keys, headers,
+параметри та тіла запитів. Перед надсиланням до зовнішнього provider перевірте,
+чи немає в них секретів. Автоматичне masking не застосовується.
+
+AI формує лише текстову аналітичну відповідь. Він не запускає Repeater,
+Intruder, OSINT, Scanner, Target Map або інші функції RequestRider.
+
+## Passive proxy та CA
+
+Налаштуйте браузер або інший дозволений QA-інструмент на HTTP proxy
+`127.0.0.1:8080`. Для HTTPS імпортуйте `data/ca/ca.crt`. Події доступні у
+вкладці **Traffic**.
+
+Traffic зберігається в пам’яті engine та очищається після його перезапуску або
+через **Clear**. Збереження до SQLite виконується окремо дією **Save row**.
+Кнопка **Refresh traffic** очищає поточний in-memory snapshot, а не надсилає
+повторний запит.
 
 ## Архітектура
 
@@ -240,174 +299,26 @@ Browser :8000
    │
    ▼
 Django web
-   ├── self-contained HTML/CSS/JavaScript UI
+   ├── UI та browser persistence
    ├── SQLite History
    └── browser-facing API gateway
          │
          ▼
 Go engine :8081
-   ├── /health
-   ├── /proxy/request
-   ├── /proxy/intruder
-   ├── /proxy/target-map
-   ├── /proxy/osint
-   ├── /proxy/scanner
-   ├── /events
-   └── /events/stream
+   ├── HTTP execution, Intruder, Target, OSINT, Scanner
+   ├── passive capture
+   └── SSE events
          │
          ▼
 Passive MITM proxy :8080
 ```
 
-Межі шарів:
+UI відповідає за введення, відображення та стан workspace. Django надає
+browser API і History. Go engine виконує HTTP-операції, фонові workflows та
+passive capture. Локальний CA автоматично створюється engine у `data/ca/`.
 
-- UI відповідає за введення, відображення, workspace і browser persistence;
-- Django відповідає за browser API, SQLite History і gateway;
-- Go відповідає за виконання HTTP-запитів, Intruder, Target, OSINT, Scanner і
-  passive capture;
-- `engine/pkg/ca` відповідає за локальний CA;
-- `engine/pkg/passive` відповідає за Traffic Store і SSE subscriptions.
-- майбутній proxy layer має відповідати за явні direct/HTTP/HTTPS/SOCKS5/TOR
-  профілі та перевірку маршруту;
-- майбутній AI layer має працювати через типізований tool API, а не отримувати
-  довільний доступ до shell, filesystem або внутрішніх процесів.
-
-## Інструменти
-
-### Repeater
-
-Repeater працює з одним повним raw HTTP editor:
-
-```http
-GET /api/echo?value=test HTTP/1.1
-Host: 127.0.0.1:3000
-Accept: application/json
-
-```
-
-Підтримуються Host/Path overrides, `Ctrl+Enter`/`Cmd+Enter`, Copy response,
-повний response inspector, binary response у Base64/Hex-представленні та
-автоматичне збереження завершеного exchange у History.
-
-### Intruder
-
-Підтримуються markers:
-
-- `§name§`;
-- `{{name}}`;
-- `%name%`, зручний для URL-фазингу.
-
-Режими:
-
-- **Sniper** — кожен marker окремо з першим dictionary;
-- **Battering Ram** — одне значення в усі markers;
-- **Pitchfork** — dictionaries паралельно за індексами;
-- **Cluster Bomb** — декартів добуток dictionaries.
-
-Transformations застосовуються зліва направо. Є URL, Base64, Hex, HTML,
-JSON, Unicode, whitespace, case, trim, prepend і append transformations.
-Великі атаки використовують bounded worker pool, incremental polling і
-windowed rendering. `4xx`/`5xx` з отриманою відповіддю залишаються повними
-результатами для аналізу.
-
-### Target
-
-Target статично будує site map і не виконує JavaScript та HTML-форми. Він
-виявляє:
-
-- HTML links/forms;
-- JS/CSS/JSON URLs;
-- `robots.txt`, `sitemap.xml`, `Sitemap:`;
-- XML `<loc>` entries;
-- API-шляхи у статичних ресурсах.
-
-Є controls `Max pages`, `Max depth`, `Delay ms`, `Same origin only`,
-`Cancel`, filtering, sorting і exports. У `Map preview` можна згорнути або
-розгорнути всі папки однією кнопкою. Browser-driven Chromium worker для
-динамічних DOM-маршрутів залишається окремим майбутнім етапом.
-
-### OSINT
-
-OSINT виконує пасивні metadata checks:
-
-- DNS/IP, MX, NS і TXT;
-- HTTP status, headers, content type, size;
-- redirect chain;
-- technology signals;
-- cookies;
-- security headers;
-- robots/sitemap discovery;
-- пасивне WAF fingerprinting;
-- необов’язковий benign WAF canary.
-
-### Scanner Pro / Safe CMS Recon
-
-Scanner Pro — це окремий read-only reconnaissance workflow, а не копія OSINT.
-Він виконує bounded `HEAD`/`GET`/`OPTIONS` перевірки явно введеної цілі:
-
-- WordPress: `/wp-admin/`, `/wp-login.php`, `/wp-json/`, `/xmlrpc.php`;
-- Joomla: `/administrator/`;
-- `/api/`, `/admin/`, `/phpmyadmin/`;
-- `.env`, `.git/HEAD`, backup/database paths;
-- `/server-status`, `/debug/`;
-- CMS/technology fingerprints;
-- security headers;
-- TLS version/cipher;
-- cookie `Secure`, `HttpOnly`, `SameSite`;
-- `Allow` methods;
-- WAF/edge signals.
-
-Результат містить `summary`, `details`, `findings`, severity, evidence і
-recommendation. Scanner Pro не виконує exploit, fuzzing, brute force,
-authentication attacks або access-control bypass. HTTP `200` для публічного
-шляху — це сигнал для ручної перевірки, а не автоматичний доказ
-уразливості.
-
-### Traffic і History
-
-Traffic працює через SSE:
-
-```text
-Go Store -> /events/stream -> Django /api/traffic/stream -> Browser
-```
-
-Запит спочатку з’являється як `pending`, після відповіді оновлюється тим самим
-event id. Джерелами можуть бути `proxy`, `repeater` і `intruder`.
-
-History зберігає завершені Repeater та Intruder exchange у SQLite. Passive
-Traffic зберігається у History лише після дії **Save row**. In-memory Traffic
-Store очищується після restart engine або через **Clear** у Traffic.
-
-### Comparer і Decoder
-
-Comparer показує відмінності у Words/Bytes режимах. Decoder підтримує URL,
-Base64, Base64 URL-safe, HTML entities, Hex, кодування й декодування байтів,
-JSON pretty/minify і SHA-256. Byte encode перетворює текст у 8-бітні двійкові
-групи, а Byte decode приймає двійкові групи або десяткові значення байтів.
-Значення з History, Traffic і Comparer можна передавати без clipboard.
-
-### Proxy, TOR і AI
-
-Proxy/TOR ще не входять до поточного runtime. AI chat використовує adapters для
-Ollama, OpenAI, Anthropic, Gemini, OpenRouter, Groq, Mistral і custom
-OpenAI-compatible endpoint-ів. Контекст передається лише після явної дії
-оператора `Send ... to AI`; автоматичного повного workspace context немає.
-- proxy-профілі `Direct`, HTTP, HTTPS і SOCKS5;
-- окремий локальний TOR SOCKS5 endpoint із видимим статусом підключення;
-- вибір маршруту для Repeater, Intruder, Target, OSINT, Scanner, workflows
-  і browser-driven worker;
-- health check маршруту, DNS policy, latency та попередження про зміну
-  source IP;
-- окрема вкладка `AI` з компактними chat bubbles і preview прикріплених даних;
-- ізольований AI chat без tools і без доступу до engine або workspace API;
-- аналіз SPA fallback через fingerprints і black-box observable changes.
-
-AI-агент не повинен отримувати довільне виконання shell-команд або доступ до
-filesystem. Для поточного runtime активні запити та Intruder перевіряються
-через execution profile, scope, rate limit, concurrency, budget і audit.
-Прикріплений context навмисно може містити Authorization, cookies, JWT, API
-keys та інші поля exchange, якщо вони є в History/Traffic. Обирайте provider з
-урахуванням цієї політики; приховане masking не застосовується.
+Окремі proxy-профілі HTTP/HTTPS/SOCKS5/TOR і browser-driven Chromium worker не
+входять до поточної реалізації; вони перелічені лише в roadmap.
 
 ## API
 
@@ -416,27 +327,27 @@ keys та інші поля exchange, якщо вони є в History/Traffic. �
 | Method | Endpoint | Призначення |
 |---|---|---|
 | `GET` | `/` | UI |
-| `POST` | `/api/execute` | Repeater gateway |
+| `POST` | `/api/execute` | Repeater |
 | `POST` | `/api/intruder` | Запуск Intruder |
-| `GET` | `/api/intruder?attack_id=<id>` | Прогрес і результати Intruder |
-| `DELETE` | `/api/intruder?attack_id=<id>` | Cancel Intruder |
-| `GET` | `/api/intruder/saved` | Збережені Intruder configurations |
-| `POST` | `/api/intruder/saved` | Зберегти Intruder configuration |
-| `POST` | `/api/intruder/saved/<id>/run` | Повторно запустити configuration |
-| `POST` | `/api/target-map` | Запустити Target map |
+| `GET` | `/api/intruder?attack_id=<id>` | Статус і результати Intruder |
+| `DELETE` | `/api/intruder?attack_id=<id>` | Скасування Intruder |
+| `GET/POST` | `/api/intruder/saved` | Перелік і збереження конфігурацій |
+| `POST` | `/api/intruder/saved/<id>/run` | Повторний запуск конфігурації |
+| `POST` | `/api/target-map` | Запуск Target map |
 | `GET` | `/api/target-map?map_id=<id>` | Статус Target map |
-| `DELETE` | `/api/target-map?map_id=<id>` | Скасувати Target map |
-| `POST` | `/api/osint` | OSINT metadata checks |
-| `POST` | `/api/scanner` | Scanner Pro findings |
-| `POST` | `/api/agent/chat` | Conversational AI turn із явним evidence context |
-| `GET` | `/api/history` | History list |
-| `GET` | `/api/history/export` | Експорт History JSON |
-| `DELETE` | `/api/history/<id>` | Видалити History record |
-| `GET` | `/api/traffic` | Traffic snapshot |
-| `DELETE` | `/api/traffic` | Очистити live Traffic |
+| `DELETE` | `/api/target-map?map_id=<id>` | Скасування Target map |
+| `POST` | `/api/osint` | OSINT |
+| `POST` | `/api/scanner` | Scanner Pro |
+| `POST` | `/api/agent/chat` | Один AI chat turn |
+| `GET` | `/api/history` | History |
+| `GET` | `/api/history/export` | Експорт History |
+| `POST` | `/api/history/import` | Legacy backend endpoint; не доступний у UI |
+| `DELETE` | `/api/history/<id>` | Видалення запису History |
+| `POST` | `/api/history/bulk` | Масове видалення записів History |
+| `GET/DELETE` | `/api/traffic` | Перегляд і очищення Traffic |
 | `GET` | `/api/traffic/stream` | Traffic SSE |
-| `POST` | `/api/traffic/save` | Зберегти Traffic exchange у History |
-| `POST` | `/api/traffic/annotate` | Додати tags/notes до Traffic |
+| `POST` | `/api/traffic/save` | Збереження Traffic у History |
+| `POST` | `/api/traffic/annotate` | Tags/notes для Traffic |
 
 ### Go engine API
 
@@ -456,37 +367,66 @@ DELETE /events
 GET    /events/stream
 ```
 
-## Структура проєкту
+## Збереження даних
 
-```text
-Request-Rider/
-├── engine/
-│   ├── main.go
-│   └── pkg/
-│       ├── ca/
-│       ├── intruder/
-│       └── passive/
-├── web/
-│   ├── manage.py
-│   ├── core/
-│   ├── lab/
-│   ├── templates/lab/index.html
-│   ├── requirements.txt
-│   └── .venv/
-├── data/ca/
-├── tests/e2e/
-├── run-engine.sh
-├── docker-compose.yml
-├── ROADMAP.md
-├── DEVELOPMENT_ISSUES.md
-├── UX_TEST_REPORT.md
-└── README.md
-```
+Workspace зберігається локально у browser storage. Session JSON може містити
+вкладки, запити, відповіді та результати аналізу, але не містить
+`data/ca/ca.key`, серверних файлів або SQLite. Не зберігайте й не експортуйте
+session JSON, якщо в ньому є секрети.
 
-`web/.venv/`, `web/db.sqlite3`, logs, `__pycache__` і `data/ca/ca.key` є
-локальними артефактами. Приватний CA-ключ не можна комітити або публікувати.
+Локальні артефакти `web/.venv/`, `web/db.sqlite3`, логи, `__pycache__` і
+`data/ca/ca.key` не повинні потрапляти до репозиторію.
 
-## Перевірка і QA
+## Особливості інструментів
+
+### Intruder
+
+Підтримуються маркери `§name§`, `{{name}}` і `%name%`. Останній варіант
+зручний для URL-фазингу у стилі ffuf, наприклад `/FUZZ/%payload%/`.
+
+- **Sniper** — кожен marker окремо перебирає перший словник.
+- **Battering Ram** — одне значення підставляється в усі markers.
+- **Pitchfork** — списки перебираються паралельно за індексами до коротшого.
+- **Cluster Bomb** — декартів добуток словників.
+
+Transformations застосовуються зліва направо. `base64Decode` і `hexDecode`
+можуть повертати binary bytes; вони не відхиляються лише через відсутність
+UTF-8. `delay_ms` задає паузу між запитами; за значення, більшого за нуль,
+jobs виконуються послідовно.
+
+POST повертає `attack_id`, GET віддає прогрес і накопичені результати. GET
+підтримує `since`, повертає `result_offset`, а `limit` обмежує розмір порції.
+DELETE скасовує незавершену атаку через context. HTTP `4xx`/`5xx` з отриманою
+відповіддю є повноцінними результатами для аналізу.
+
+### Target
+
+`POST /api/target-map` приймає `url`, `max_pages`, `max_depth`, `delay_ms` і
+`same_origin`; GET повертає прогрес і `pages`, DELETE скасовує обхід.
+
+Виявляються HTML links/forms, JS/CSS/JSON URLs, `robots.txt`, `sitemap.xml`,
+`Sitemap:` і XML `<loc>`. Для ресурсів зберігаються `url`, `depth`, `стан`,
+`content_type` і `kind`.
+
+Target не виконує JavaScript і не надсилає форми. Browser-driven обхід із
+Chromium/Playwright залишається майбутнім напрямом. UI експортує карту в JSON,
+CSV і текстове дерево.
+
+### AI
+
+AI-вкладка аналізує лише явно прикріплені оператором observations. Контекст не
+завантажується автоматично для звичайного повідомлення. Доступні провайдери:
+`ollama`, `openai`, `anthropic`, `openrouter`, `gemini`, `groq`, `mistral` і
+`openai_compatible`.
+
+AI не має tools, execution profile, доступу до History/Traffic API, Go engine,
+shell, filesystem або arbitrary HTTP. Віддалений provider endpoint має
+використовувати HTTPS; локальний Ollama дозволений лише на loopback.
+
+Просіть AI відокремлювати FACT, HYPOTHESIS та UNKNOWN. Observable change не є
+автоматично доказом уразливості.
+
+## Перевірка
 
 Go tests:
 
@@ -503,7 +443,7 @@ python manage.py check
 python manage.py test -v 2
 ```
 
-Inline JavaScript syntax:
+Перевірка inline JavaScript:
 
 ```bash
 python - <<'PY'
@@ -521,29 +461,19 @@ raise SystemExit(result.returncode)
 PY
 ```
 
-
-Smoke script для явно дозволеної test target:
+Smoke test для явно дозволеної цілі:
 
 ```bash
 TARGET_URL=https://authorized.example.test/api/echo?value=smoke ./tools/smoke.sh
 ```
 
-## Документація і план
+## Документація
 
-- `ROADMAP.md` — виконані етапи й майбутні напрямки;
-- `AGENT_RUNTIME.md` — ізольований AI chat, explicit evidence context і
-  provider connection policy;
-- `LLM_ROADMAP.md` — конкретний roadmap ітеративного LLM-тестування,
-  state, policy, verify та human-readable reports;
-- `DEVELOPMENT_ISSUES.md` — відомі проблеми та рішення;
-- `BUG_BOUNTY_AND_DEVELOPERS.md` — канал повідомлень про помилки, пропозицій
-  і участі в розробці;
-- зовнішній каталог `RequestRider-QA/QA_REPORT.md` — QA-звіт, якщо він
-  створений у локальному середовищі;
-- зовнішні каталоги `RequestRider-QA/selenium` і
-  `RequestRider-QA/playwright` — окремі browser QA-набори.
-
-Найближчі великі напрями — browser-driven Target worker на Chromium/Playwright,
-явні proxy/TOR-профілі та безпечний AI tool layer. Browser automation, proxy
-маршрутизація й AI-агент мають залишатися окремими компонентами з локальними
-fixtures, approval gates і відтворюваними тестами.
+- `AGENTS.md` — правила для агентів і розробників;
+- `AGENT_RUNTIME.md` — архітектура AI chat, evidence context і обмеження
+  provider connection;
+- `AGENT_USER_GUIDE.md` — користувацький workflow AI;
+- `ROADMAP.md` — виконані етапи та майбутні напрямки;
+- `LLM_ROADMAP.md` — майбутній roadmap LLM-тестування;
+- `DEVELOPMENT_ISSUES.md` — відомі проблеми та їхні рішення;
+- `BUG_BOUNTY_AND_DEVELOPERS.md` — повідомлення про помилки та участь у проєкті.
