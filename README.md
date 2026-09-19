@@ -1,7 +1,6 @@
-<img width="2912" height="1440" alt="Gemini_Generated_Image_am0pnwam0pnwam0p (1)" src="https://github.com/user-attachments/assets/d24a8205-5324-4a97-8754-17dc437acb55" />
 
-<img width="1141" height="356" alt="Screenshot 2026-09-18 at 11-53-24 Screenshot_2026-09-18_11-48-37 png (PNG Image 1366 × 733 pixels) — Scaled (84_)" src="https://github.com/user-attachments/assets/e2dfb7f5-18b1-41d5-acd1-83fad058a846" />
-
+<img width="2912" height="1440" alt="Gemini_Generated_Image_am0pnwam0pnwam0p (1)" src="https://github.com/user-attachments/assets/2683a21b-d495-42fc-9dfa-c8a7dc77c2e8" />
+<img width="1141" height="356" alt="Screenshot 2026-09-18 at 11-53-24 Screenshot_2026-09-18_11-48-37 png (PNG Image 1366 × 733 pixels) — Scaled (84_)" src="https://github.com/user-attachments/assets/8fd3f222-8053-4ad3-892c-e6786ddaeadf" />
 
 
 # RequestRider
