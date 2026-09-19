@@ -178,35 +178,6 @@ docker compose ps
 docker ps
 ```
 
-### Маршрутизація через SOCKS5/TOR
-
-У верхній панелі UI доступний глобальний профіль маршруту:
-
-- **Direct** — пряме з'єднання без upstream proxy;
-- **SOCKS5** — SOCKS5-адреса з поля `127.0.0.1:9050` або іншої вказаної адреси;
-- **TOR** — той самий SOCKS5-механізм із профільною назвою для локального Tor.
-
-Для локального Tor запустіть Tor із SOCKS5 на `127.0.0.1:9050`, виберіть
-**TOR** і натисніть **Apply route**. Для Docker Compose виберіть **TOR** та
-вкажіть `tor:9050`, оскільки engine у контейнері не може звернутися до
-loopback-адреси host як до іншого контейнера.
-
-Маршрут застосовується до Repeater, Intruder, Target, OSINT і Scanner, а також
-до upstream-з'єднань passive MITM. Ланцюжок для браузера залишається таким:
-
-```text
-Browser -> RequestRider MITM :8080 -> SOCKS5/TOR :9050 -> target
-```
-
-Для активних інструментів повторний прохід через `:8080` не використовується:
-вони застосовують той самий outbound transport напряму. Це не створює
-подвійного MITM, але результати Repeater/Intruder усе одно публікуються у
-спільний Traffic Store.
-
-Після зміни профілю нові з'єднання використовують новий маршрут; idle
-з'єднання закриваються. Якщо SOCKS5/Tor недоступний, запит завершується явною
-помилкою, а не успішним fallback на Direct.
-
 ## Налаштування AI
 
 Відкрийте вкладку **AI**, виберіть провайдера та за потреби заповніть:
@@ -469,11 +440,9 @@ TARGET_URL=https://authorized.example.test/api/echo?value=smoke ./tools/smoke.sh
 
 ## Документація
 
-- `AGENTS.md` — правила для агентів і розробників;
 - `AGENT_RUNTIME.md` — архітектура AI chat, evidence context і обмеження
   provider connection;
 - `AGENT_USER_GUIDE.md` — користувацький workflow AI;
 - `ROADMAP.md` — виконані етапи та майбутні напрямки;
-- `LLM_ROADMAP.md` — майбутній roadmap LLM-тестування;
 - `DEVELOPMENT_ISSUES.md` — відомі проблеми та їхні рішення;
 - `BUG_BOUNTY_AND_DEVELOPERS.md` — повідомлення про помилки та участь у проєкті.
